@@ -1,0 +1,17 @@
+# Dependencies and build output
+**/node_modules/
+**/dist/
+**/.vite/
+**/*.tsbuildinfo
+**/.cache/
+**/coverage/
+
+# Local tool output
+**/.stitch/
+docs/stitch/
+
+# Logs and environment secrets
+*.log
+.env
+.env.*
+!.env.example

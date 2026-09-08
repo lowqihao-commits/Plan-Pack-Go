@@ -43,7 +43,7 @@ Do not introduce a new dominant brand colour. Teal + checkmark means Packed. Cor
 
 - **Primary:** Teal fill, accessible dark/light label selected by contrast, one dominant action per view.
 - **Secondary:** white or Mint surface with Teal/dark text and border where needed.
-- **Tertiary/text:** for Back, Skip, Review later and low-risk actions.
+- **Tertiary/text:** for Back, Skip, `Done for now` and low-risk actions. Do not introduce a separate `Review later` preference action.
 - **Destructive:** restrained Coral-tinted treatment plus explicit wording/confirmation.
 - Disabled and loading states remain recognizable without relying on colour alone.
 

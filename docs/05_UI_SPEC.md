@@ -22,10 +22,10 @@
 
 - **App bar/title:** compact logo; `Welcome back`.
 - **Inputs:** Email, Password, Show password.
-- **Buttons/links:** primary `Log In`; secondary `Continue with Google`; `Forgot password?`; `Sign Up`.
+- **Buttons/links:** primary `Log In`; secondary `Continue with Google`; `Sign Up`.
 - **States:** empty, invalid email, missing password, submitting.
 - **Do not show:** mascot, other social providers, onboarding, profile fields.
-- **Next/back:** login → 04; Sign Up → 03; recovery → 37.
+- **Next/back:** Log In → 04; Sign Up → 03. Forgot Password is intentionally absent.
 
 ### 03 Sign Up
 
@@ -103,6 +103,7 @@
 - **App bar/title:** Back; `Rate the Places`.
 - **Cards:** place/location, `Added by`, 0–10 input, current user value, public member avatar/value ratings, Group score.
 - **Status:** `New`, `Unrated`, and progress such as `3 of 4 places rated`.
+- **Roster rule:** participation, aggregate scores and votes use the current trip's eligible members; Pending and `Left Trip` members are excluded.
 - **Buttons:** secondary `Done for now` saves current ratings and returns to Group context; primary `Review Results` advances to 12. Do not add a separate `Review later` action.
 - **Do not show:** private scores, hidden weighting or final itinerary.
 - **Next/back:** Review Results → 12; Done returns to Group context; Back → 10.
@@ -290,7 +291,7 @@
 
 - **App bar/title:** Back; `Manage Members`.
 - **Rows:** picture, name, Admin/Member, Joined/Pending/current participation.
-- **Actions:** Make Admin, Remove, view shared responsibilities; resend/cancel pending invitation; mark participation.
+- **Actions:** Remove, view shared responsibilities, resend/cancel pending invitation, mark Pending as Joined and update participation. Admin transfer is not included.
 - **Do not show:** complex impact dashboard.
 - **Next/back:** participation → 33; Back → 31; consequential actions use confirmation.
 
@@ -327,15 +328,6 @@
 - **Button:** `Save Changes`.
 - **Do not show:** password, currency, payment, notification or privacy settings.
 - **Next/back:** Save/Cancel → 35.
-
-### 37 Forgot Password
-
-- **App bar/title:** Back; compact logo; `Forgot password?`.
-- **Input:** Email and short recovery explanation.
-- **Button/link:** `Send Recovery Link`; `Back to Log In`.
-- **States:** validation, submitting and compact sent confirmation.
-- **Do not show:** phone recovery, security questions, OTP or new-password form.
-- **Next/back:** sent/back → 02.
 
 ## Reusable overlays and states
 

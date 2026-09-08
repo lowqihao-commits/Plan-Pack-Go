@@ -2,7 +2,7 @@
 
 ## Asset policy
 
-The package contains copies for handoff; original iCloud assets were not modified. Do not regenerate assets. Prefer transparent Stitch-ready files where approved. Original pose images remain references when a clean transparent production cutout is unavailable.
+The package contains approved raster assets and exact runtime copies; original source assets were not modified. Do not regenerate, redraw, reinterpret, vectorize or replace them during visual polish. Prefer the existing transparent files for runtime placement. Original opaque pose images remain reference-only where no transparent runtime pose exists.
 
 All packaged paths are relative to `Plan-Pack-Go/`.
 
@@ -10,8 +10,8 @@ All packaged paths are relative to `Plan-Pack-Go/`.
 
 | Asset | Packaged path | Format / background | Intended usage | Status | Replacement required? |
 |---|---|---|---|---|---|
-| Full logo reference | `assets/logo/plan-pack-go-logo-original.png` | PNG, 1254×1254, opaque Cream square/background | Authoritative logo composition and colour reference; Splash and compact brand mark recreation | **APPROVED as reference** | Clean standalone transparent/vector export is **MISSING / TODO**; do not use rejected halo cutouts |
-| App icon | — | — | Launcher/app icon | **MISSING / TODO** | Yes, only if later prototype/delivery requires it; do not invent now |
+| Full logo | `assets/logo/plan-pack-go-logo-original.png` | PNG, 1254×1254, opaque Cream square/background | Authoritative logo and final prototype source; copied unchanged to `prototype/public/assets/plan-pack-go-logo.png` | **APPROVED** | No |
+| App icon | — | — | Launcher/app icon | **OUT OF SCOPE** | Do not invent during visual polish |
 
 The Cream square and surrounding oval shadow in the original logo image are not part of the standalone logo mark. Preserve the location pin/landscape, suitcase, dotted route, checkmark and full `Plan Pack Go` wordmark.
 
@@ -23,8 +23,8 @@ The Cream square and surrounding oval shadow in the original logo image are not 
 | Original base/backpack pose | `assets/mascot/背包.png` | PNG, opaque Cream scene | Original reference for backpack/scarf details | **APPROVED as reference** | Use transparent master for production placement |
 | Itinerary analysis | `assets/mascot/mascot-map-transparent.png` | PNG, transparent | Small owl studying folded map | **APPROVED** | No |
 | Original itinerary analysis | `assets/mascot/navigate.png` | PNG, opaque Cream scene | Pose/prop reference | **APPROVED as reference** | Transparent version already available |
-| Packing pose | `assets/mascot/packing.png` | PNG, opaque Cream scene | Pose/prop reference for packing-a-suitcase state | **APPROVED as reference** | Clean transparent production cutout **MISSING / TODO** |
-| Loading / trip-ready flight pose | `assets/mascot/letsgo.png` | PNG, opaque scene with clouds/plane/route/pin | Splash/loading/trip-ready pose reference only | **APPROVED as reference** | Clean transparent production cutout **MISSING / TODO** |
+| Packing pose | `assets/mascot/packing.png` | PNG, opaque Cream scene | Pose/prop reference for packing-a-suitcase state | **APPROVED as reference** | No replacement during visual polish |
+| Loading / trip-ready flight pose | `assets/mascot/letsgo.png` | PNG, opaque scene with clouds/plane/route/pin | Splash/loading/trip-ready pose reference only | **APPROVED as reference** | No replacement during visual polish |
 | Warning | `assets/mascot/mascot-warning-transparent.png` | PNG, transparent | Calm shared-item or itinerary warning | **APPROVED** | No |
 | Original warning | `assets/mascot/alert.png` | PNG, opaque Cream scene | Pose/sign reference | **APPROVED as reference** | Transparent version already available |
 | Packing completed | `assets/mascot/mascot-packing-complete-transparent.png` | PNG, transparent | Sitting on closed suitcase/check state | **APPROVED** | No |
@@ -49,11 +49,14 @@ These remain under the local ChatGPT project `sources/` and were not duplicated 
 - `Kick-off Day Slides CN26.pdf`
 - `TNC CodeNection 2026 .pdf`
 
-## Missing / TODO assets
+## Runtime asset mapping
 
-1. Transparent or vector standalone logo suitable for direct production placement.
-2. App icon, if later required.
-3. Clean transparent packing-suitcase pose.
-4. Clean transparent flying/loading/trip-ready pose.
+| Runtime path | Approved source | Current use |
+|---|---|---|
+| `prototype/public/assets/plan-pack-go-logo.png` | `assets/logo/plan-pack-go-logo-original.png` | Splash and compact brand mark |
+| `prototype/public/assets/mascot-master-transparent.png` | `assets/mascot/mascot-master-transparent.png` | Splash/loading brand moment |
+| `prototype/public/assets/mascot-map-transparent.png` | `assets/mascot/mascot-map-transparent.png` | Smart Packing analysis |
+| `prototype/public/assets/mascot-warning-transparent.png` | `assets/mascot/mascot-warning-transparent.png` | Shared Packing warning |
+| `prototype/public/assets/mascot-packing-complete-transparent.png` | `assets/mascot/mascot-packing-complete-transparent.png` | Packing completion |
 
-Do not generate these until explicitly approved.
+These runtime files are byte-for-byte copies of the approved source assets. Other opaque mascot images remain approved references and are not loaded by the current application. A transparent/vector logo, app icon, and additional transparent poses are possible future asset variants only; they are not required for the final prototype and must not be generated during Bolt visual polish.

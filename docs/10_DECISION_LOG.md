@@ -42,6 +42,9 @@ This log preserves iteration evidence. Sequence is thematic/relative because exa
 | 36 | Show AI Suggestions explicitly on the Group Smart Packing hub | Hide entry inside another packing module | Keeps the core differentiator discoverable and matches the approved Group flow | Adds one more hub card/action while preserving the same module scope | **LOCKED / APPROVED** |
 | 37 | Open Packing Reminders from both Smart Packing home screens | Link from Personal Packing or leave placement unspecified | Keeps reminder settings centralized and equally discoverable in Solo and Group | Uses a secondary settings row rather than another primary module | **LOCKED / APPROVED** |
 | 38 | Use `Done for now` as the only rating-deferral action | Separate `Done for now` and `Review later` actions | Both actions represented the same intent and would create unnecessary ambiguity | `Review Results` remains the distinct forward action | **LOCKED / APPROVED** |
+| 39 | Remove Forgot Password from the final prototype | Leave a disabled future control or add a recovery flow | Removes a visible dead control and keeps the frozen auth scope honest | Account recovery is not demonstrated | **LOCKED / APPROVED after final QA** |
+| 40 | Use the current eligible trip roster for ratings and votes | Fixed five-person preference roster | Keeps participation, scores and majority voting consistent with actual group membership | Seeded Penang data remains an example only | **LOCKED / APPROVED after final QA** |
+| 41 | Use Bolt only for visual polish after freezing the functional baseline | Allow visual tooling to alter behavior | Protects the QA-approved product while permitting presentation refinement | Bolt changes must remain on the dedicated working branch | **LOCKED / APPROVED workflow** |
 
 ## Unresolved decisions
 

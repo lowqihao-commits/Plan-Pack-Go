@@ -9,7 +9,7 @@ Unless otherwise labelled, requirements below are **LOCKED / APPROVED for the pr
 - Email and Password login.
 - Continue with Google.
 - Sign Up with Name, Email, Password and Confirm Password.
-- Forgot Password uses email recovery.
+- Forgot Password is intentionally absent from the final prototype; do not show a disabled recovery control.
 - No unnecessary profile fields and no onboarding.
 
 ### My Trips
@@ -46,6 +46,7 @@ Do not request a destination first. Places may span multiple cities or regions.
 - Public 0–10 member ratings, visible to the Group.
 - Asynchronous updates with member completion/progress.
 - Aggregate results shown as normalized percentages and ranked.
+- Ratings, participation totals, result summaries and majority voting use the current trip's eligible roster. Pending and `Left Trip` members do not count; joined current members do.
 - Admin may add places and rate first. `Done for now` saves the current ratings and returns to the Group context without locking later changes. `Review Results` is the separate action that advances to the results screen. Do not show a second `Review later` action.
 - Later additions create New/Unrated items.
 
@@ -177,7 +178,7 @@ Explicitly excluded: spending limit, remaining budget, over-budget warning, cust
 - Overview: group/trip name, member count, Admin marker, member list/status, Invite Member and Manage Members.
 - Summary links: Group Preferences, Shared Packing, Shared Expenses; do not duplicate full modules.
 - Creator is Admin.
-- Manage Members supports invite, resend/cancel pending invitation, remove, simple role/status management and viewing shared responsibilities.
+- Manage Members supports invite, resend/cancel pending invitation, remove, simple status management and viewing shared responsibilities. Admin transfer is not part of the prototype.
 - Statuses: Joining, Not Joining Today, Skip Activity, Left Trip. Pending invite status may also appear.
 - Participation changes trigger only essential follow-up, especially uncovered shared items.
 

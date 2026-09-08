@@ -51,6 +51,7 @@
 
 - Rating control accepts integers from 0 through 10, is keyboard/touch accessible and immediately displays the chosen value.
 - Ratings are public and aggregate to a normalized percentage.
+- Rating participation, aggregate results and majority votes all derive from the same current eligible trip roster. Pending and `Left Trip` members are excluded.
 - Review Results shows rating completion so incomplete data is not mistaken for consensus.
 - Exact High/Medium/Low thresholds are `TODO / Not yet decided`; keep them configurable in mock logic.
 - Request to Include uses public Approve/Reject and majority progress; author/requester has one normal vote.

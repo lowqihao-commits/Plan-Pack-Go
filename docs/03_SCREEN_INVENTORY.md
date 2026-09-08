@@ -2,7 +2,7 @@
 
 ## Production rule
 
-The approved prototype inventory contains **37 base frames and 8 reusable state/overlay frames = 45 total**. Frame names below match the Low-Fi Figma/Stitch production order. All target `390 × 844`; long content may vertically scroll inside the viewport.
+The final prototype inventory contains **36 active base frames and 8 reusable state/overlay frames = 44 total**. Forgot Password was removed during final QA. All target `390 × 844`; long content may vertically scroll inside the viewport.
 
 Priority meanings: **Core** demonstrates the main product story; **Supporting** completes navigation/management; **Optional** is skippable without breaking the main story.
 
@@ -11,7 +11,7 @@ Priority meanings: **Core** demonstrates the main product story; **Supporting** 
 | ID | Screen | Mode | Purpose | Main components | Main CTA → destination | Priority / state |
 |---|---|---|---|---|---|---|
 | 01 | Splash | Both | Brand entry | Logo, full name, slogan, flying owl/route | Automatic after ~2s → 02 | Core; timed |
-| 02 | Log In | Both | Authenticate | Email, password, forgot link, Google, Sign Up link | Log In → 04 | Core; validation |
+| 02 | Log In | Both | Authenticate | Email, password, Google, Sign Up link | Log In → 04 | Core; validation |
 | 03 | Sign Up | Both | Create account | Name, email, password, confirm password | Create Account → 04 | Supporting; validation |
 | 04 | My Trips | Both | Select/manage trips | App bar, Add New Trip, search/filter, sorted trip cards | Add New Trip → 05; card → 17/18 | Core; populated/empty |
 | 05 | Trip Name | Both | Start trip creation | One Trip name field, progress | Continue → 06 | Core; validation |
@@ -46,7 +46,6 @@ Priority meanings: **Core** demonstrates the main product story; **Supporting** 
 | 34 | Reassign Shared Items | Group | Cover affected items | Affected item/quantity/old assignee/new member | Reassign → 31/25 | Supporting; `Later` allowed |
 | 35 | Profile Settings | Both | Profile/preferences | Profile, notifications, Language, Theme, Log Out | Edit Profile → 36 | Supporting |
 | 36 | Edit Profile | Both | Edit basic identity | Photo, Name, Email | Save Changes → 35 | Supporting; validation |
-| 37 | Forgot Password | Both | Recover access | Email, explanation, back link | Send Recovery Link → confirmation/02 | Supporting; validation |
 
 ## Reusable state and overlay frames
 

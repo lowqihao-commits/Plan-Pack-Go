@@ -8,7 +8,6 @@
 
 - Log In → `04 My Trips`
 - Sign Up link → `03 Sign Up` → `04 My Trips`
-- Forgot Password → `37 Forgot Password` → `02 Log In`
 - Profile icon from My Trips → `35 Profile Settings` → `36 Edit Profile`
 
 ### Create Trip
@@ -62,8 +61,6 @@ flowchart TD
     B --> C[04 My Trips]
     B --> D[03 Sign Up]
     D --> C
-    B --> E[37 Forgot Password]
-    E --> B
     C --> P[35 Profile Settings]
     P --> PE[36 Edit Profile]
     PE --> P

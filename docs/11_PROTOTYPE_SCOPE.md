@@ -80,7 +80,7 @@ Create reusable primitives for app bars, buttons, form fields, cards, badges, pr
 
 ## Prototype routes versus frames
 
-The inventory contains 37 base frames plus eight reusable states. Implementation does not need 45 unrelated page components: Edit Day may reuse Itinerary Detail; Add Expense variants may reuse one form; overlays and S08 must reuse patterns. Route names/structure are implementation details as long as user-visible navigation matches `04_USER_FLOW.md`.
+The final inventory contains 36 active base frames plus eight reusable states = 44 total. Implementation does not need 44 unrelated page components: Edit Day may reuse Itinerary Detail; Add Expense variants may reuse one form; overlays and S08 must reuse patterns. Forgot Password was removed during final QA. Route names/structure are implementation details as long as user-visible navigation matches `04_USER_FLOW.md`.
 
 ## Completion boundary
 

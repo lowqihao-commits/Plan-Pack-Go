@@ -42,6 +42,8 @@ Ratings are public integers out of 10. Percentage is the mean divided by 10, dis
 | Entopia Butterfly Farm | Teluk Bahang | Aisha | 7 | 8 | 6 | 8 | — | 73%, 4/5 rated, Medium example |
 | Batu Ferringhi Beach | Batu Ferringhi | Ravi | 4 | 5 | — | 6 | — | 50%, 3/5 rated, Low example |
 
+This five-member Penang table is seeded demonstration data, not a fixed voter roster. Runtime ratings, participation and majority voting must use the current trip's eligible members; Pending and `Left Trip` members do not count.
+
 The category labels are illustrative mock states only. Do not infer production thresholds from them; thresholds remain undecided.
 
 Example Request to Include: Ravi requests Batu Ferringhi Beach because it is his strongest personal preference; vote currently `2 of 5 approve`.
