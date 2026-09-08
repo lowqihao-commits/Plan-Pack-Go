@@ -1,0 +1,30 @@
+import { Bell, ChevronDown, Globe2, LogOut, Mail, Moon, Pencil, ShieldCheck, UserRound } from 'lucide-react';
+import { useState, type FormEvent } from 'react';
+import { AppBar, Button, Page, TextField } from '../components/ui';
+import { initialsForName } from '../data/supportingData';
+import type { LanguagePreference, NotificationPreferences, ProfileState, ThemePreference } from '../types';
+
+export function ProfileSettingsScreen({ profile, notifications, language, theme, onBack, onEdit, onNotificationsChange, onLanguageChange, onThemeChange, onLogout }: { profile: ProfileState; notifications: NotificationPreferences; language: LanguagePreference; theme: ThemePreference; onBack: () => void; onEdit: () => void; onNotificationsChange: (value: NotificationPreferences) => void; onLanguageChange: (value: LanguagePreference) => void; onThemeChange: (value: ThemePreference) => void; onLogout: () => void }) {
+  const toggle = (key: keyof NotificationPreferences) => onNotificationsChange({ ...notifications, [key]: !notifications[key] });
+  return <Page className="profile-page" labelledBy="profile-title"><AppBar title="Profile / Settings" onBack={onBack} /><div className="profile-body">
+    <section className="profile-card" aria-labelledby="profile-title"><span className={`profile-avatar-large avatar--${(profile.avatarVariant % 4) + 1}`}>{profile.initials}</span><div><h2 id="profile-title">{profile.name}</h2><p><Mail aria-hidden="true" size={14} /> {profile.email}</p></div><Button type="button" variant="secondary" onClick={onEdit}><Pencil aria-hidden="true" size={16} /> Edit Profile</Button></section>
+
+    <section aria-labelledby="notification-settings-title"><div className="settings-section-heading"><span><Bell aria-hidden="true" size={19} /></span><div><h2 id="notification-settings-title">Notifications</h2><p>Choose the high-level updates you want.</p></div></div><div className="settings-list"><SettingsToggle title="Packing Reminders" description="Milestone reminders from your packing plan." checked={notifications.packingReminders} onToggle={() => toggle('packingReminders')} /><SettingsToggle title="Group Updates" description="Important participation and shared-item changes." checked={notifications.groupUpdates} onToggle={() => toggle('groupUpdates')} /><SettingsToggle title="Trip Alerts" description="Meaningful itinerary, delay and weather updates." checked={notifications.tripAlerts} onToggle={() => toggle('tripAlerts')} /></div></section>
+
+    <section aria-labelledby="app-settings-title"><div className="settings-section-heading"><span><Globe2 aria-hidden="true" size={19} /></span><div><h2 id="app-settings-title">App Settings</h2><p>Choose how Plan Pack Go appears.</p></div></div><div className="select-settings-list"><label><span><Globe2 aria-hidden="true" size={17} /> Language</span><div><select name="appLanguage" value={language} onChange={(event) => onLanguageChange(event.target.value as LanguagePreference)}><option>English</option><option>Bahasa Melayu</option><option>中文</option></select><ChevronDown aria-hidden="true" size={16} /></div></label><label><span><Moon aria-hidden="true" size={17} /> Theme</span><div><select name="appTheme" value={theme} onChange={(event) => onThemeChange(event.target.value as ThemePreference)}><option>Light</option><option>System</option><option>Dark</option></select><ChevronDown aria-hidden="true" size={16} /></div></label></div><p className="settings-note"><ShieldCheck aria-hidden="true" size={15} /> Your display preference is saved for this session.</p></section>
+
+    <section aria-labelledby="account-settings-title"><div className="settings-section-heading"><span><UserRound aria-hidden="true" size={19} /></span><div><h2 id="account-settings-title">Account</h2><p>Session controls.</p></div></div><Button type="button" variant="danger" fullWidth onClick={onLogout}><LogOut aria-hidden="true" size={17} /> Log Out</Button></section>
+  </div></Page>;
+}
+
+export function EditProfileScreen({ profile, onCancel, onSave }: { profile: ProfileState; onCancel: () => void; onSave: (profile: ProfileState) => void }) {
+  const [name, setName] = useState(profile.name);
+  const [avatarVariant, setAvatarVariant] = useState(profile.avatarVariant);
+  const initials = initialsForName(name);
+  const submit = (event: FormEvent) => { event.preventDefault(); if (name.trim()) onSave({ ...profile, name: name.trim(), initials, avatarVariant }); };
+  return <Page className="edit-profile-page" labelledBy="edit-profile-title"><AppBar title="Edit Profile" onBack={onCancel} /><form className="edit-profile-body" onSubmit={submit}><section className="edit-avatar" aria-labelledby="edit-profile-title"><span className={`profile-avatar-large profile-avatar-large--editable avatar--${(avatarVariant % 4) + 1}`}>{initials}</span><div><h2 id="edit-profile-title">Profile picture</h2><p>Choose an avatar that feels like you.</p><Button type="button" variant="secondary" onClick={() => setAvatarVariant((current) => (current + 1) % 4)}>Choose Another Avatar</Button></div></section><TextField id="profile-name" name="profileName" label="Name" autoComplete="name" placeholder="Alex Tan" value={name} onChange={(event) => setName(event.target.value)} /><TextField id="profile-email" name="profileEmail" label="Email" type="email" value={profile.email} readOnly helper="Email changes are not available here." /><div className="form-spacer" /><div className="bottom-actions bottom-actions--split"><Button type="button" variant="secondary" onClick={onCancel}>Cancel</Button><Button type="submit" disabled={!name.trim()}>Save Changes</Button></div></form></Page>;
+}
+
+function SettingsToggle({ title, description, checked, onToggle }: { title: string; description: string; checked: boolean; onToggle: () => void }) {
+  return <button className="settings-toggle" type="button" role="switch" aria-checked={checked} onClick={onToggle}><span><strong>{title}</strong><small>{description}</small></span><span className={`switch ${checked ? 'switch--on' : ''}`} aria-hidden="true"><i /></span></button>;
+}
