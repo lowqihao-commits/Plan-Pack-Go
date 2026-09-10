@@ -70,8 +70,8 @@ export function createRecommendedItinerary(places: Place[], draft: TripDraft): I
     departureOption: 'now',
     departureTime: index === 1 ? '08:00' : index === dayCount - 1 ? '10:00' : '09:00',
     stops,
-    overnightType: index < dayCount - 1 ? 'Accommodation' : null,
-    overnightLocation: index < dayCount - 1 ? 'Harbour View Hotel, George Town' : '',
+    overnightType: index < dayCount - 1 ? 'Not decided yet' : null,
+    overnightLocation: '',
     saved: false,
   }));
 }
@@ -125,7 +125,7 @@ export function getDaySchedule(day: ItineraryDay, finalDay: boolean) {
     };
   });
 
-  const returnSegment = day.stops.length ? (finalDay ? { minutes: 25, distance: 8 } : { minutes: 20, distance: 6 }) : { minutes: 0, distance: 0 };
+  const returnSegment = day.stops.length || (!finalDay && day.overnightPlaceId) ? (finalDay ? { minutes: 25, distance: 8 } : { minutes: 20, distance: 6 }) : { minutes: 0, distance: 0 };
   cursor += returnSegment.minutes;
   totalTravelMinutes += returnSegment.minutes;
   totalDistance += returnSegment.distance;

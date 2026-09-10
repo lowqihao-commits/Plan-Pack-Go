@@ -113,6 +113,7 @@ export interface ItineraryDay {
   stops: ItineraryStop[];
   overnightType: OvernightType | null;
   overnightLocation: string;
+  overnightPlaceId?: string;
   saved: boolean;
 }
 
@@ -170,9 +171,14 @@ export interface ReminderSettings {
 export interface OutfitDayPlan {
   dayNumber: number;
   activityContext: string;
+  outfits: OutfitEntry[];
+}
+
+export interface OutfitEntry {
+  id: string;
   items: string[];
   decision: 'pending' | 'added' | 'skipped';
-  photoAttached: boolean;
+  photoUrl?: string;
   notes: string;
   reuseItem: string;
 }

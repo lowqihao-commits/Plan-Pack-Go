@@ -11,7 +11,7 @@ export function ItineraryDetailScreen({ days, activeDayIndex, onActiveDayChange,
     <Page className="itinerary-detail-page" labelledBy="itinerary-detail-title">
       <AppBar title="Itinerary" onBack={onBack} />
       <div className="itinerary-detail-body">
-        <section className="detail-heading"><p className="eyebrow">Finalized plan</p><h2 id="itinerary-detail-title">Day {day.dayNumber}</h2><p>Review the saved order and timing for this day.</p></section>
+        <section className="detail-heading"><p className="eyebrow">Finalized plan</p><h2 id="itinerary-detail-title">Day {day.dayNumber}</h2><p>Your saved stops and timing for today.</p></section>
         <div className="day-tabs" role="tablist" aria-label="Itinerary days">{days.map((item, index) => <button id={`itinerary-detail-tab-${item.id}`} type="button" role="tab" aria-selected={index === activeDayIndex} aria-controls={`itinerary-detail-panel-${item.id}`} tabIndex={index === activeDayIndex ? 0 : -1} className={index === activeDayIndex ? 'day-tab--active' : ''} key={item.id} onClick={() => onActiveDayChange(index)} onKeyDown={(event) => handleTabKey(event, index, days.length, onActiveDayChange)}>Day {item.dayNumber}</button>)}</div>
 
         <div className="day-tabpanel" id={`itinerary-detail-panel-${day.id}`} role="tabpanel" aria-labelledby={`itinerary-detail-tab-${day.id}`} tabIndex={0}>

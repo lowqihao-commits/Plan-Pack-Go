@@ -33,7 +33,7 @@ export function SoloFinalReviewScreen({ draft, places, selectedIds, confirmed, o
         </section>
 
         <div className="final-review-heading">
-          <div><h2 id="solo-final-title">Choose your final places</h2><p>Include the places you want available when planning each day.</p></div>
+          <div><h2 id="solo-final-title">Choose your final places</h2><p>Choose which places to include in your itinerary.</p></div>
           <span className="selected-count">{selectedIds.length} selected</span>
         </div>
 

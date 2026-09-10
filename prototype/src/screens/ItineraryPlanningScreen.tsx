@@ -9,6 +9,7 @@ interface ItineraryPlanningScreenProps {
   draft: TripDraft;
   mode: TravelMode;
   days: ItineraryDay[];
+  confirmedPlaces: Place[];
   activeDayIndex: number;
   onActiveDayChange: (index: number) => void;
   onDaysChange: (days: ItineraryDay[]) => void;
@@ -23,7 +24,7 @@ function optionTime(dayNumber: number, option: DepartureOption): string {
   return formatTime(base + (option === 'later' ? 30 : 0));
 }
 
-export function ItineraryPlanningScreen({ draft, mode, days, activeDayIndex, onActiveDayChange, onDaysChange, onBack, onRoutePreview, onPlanComplete, onToast }: ItineraryPlanningScreenProps) {
+export function ItineraryPlanningScreen({ draft, mode, days, confirmedPlaces, activeDayIndex, onActiveDayChange, onDaysChange, onBack, onRoutePreview, onPlanComplete, onToast }: ItineraryPlanningScreenProps) {
   const [addOpen, setAddOpen] = useState(false);
   const [addQuery, setAddQuery] = useState('');
   const [pendingStop, setPendingStop] = useState<ItineraryStop | null>(null);
@@ -31,6 +32,22 @@ export function ItineraryPlanningScreen({ draft, mode, days, activeDayIndex, onA
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const day = days[activeDayIndex];
   const finalDay = activeDayIndex === days.length - 1;
+  const lodgingPattern = /hotel|homestay|hostel|resort|campsite|accommodation|lodge|guest\s*house|campground/i;
+  const overnightChoices = [...confirmedPlaces].sort((a, b) => Number(lodgingPattern.test(b.name)) - Number(lodgingPattern.test(a.name)));
+  const selectOvernightPlace = (placeId: string) => {
+    const place = confirmedPlaces.find((item) => item.id === placeId);
+    onDaysChange(days.map((item, index) => ({
+      ...item,
+      // A selected stay is an endpoint, not a duplicate activity visit.
+      stops: place ? item.stops.filter((stop) => stop.placeId !== place.id) : item.stops,
+      ...(index === activeDayIndex ? {
+        overnightPlaceId: place?.id,
+        overnightLocation: place?.name || '',
+        overnightType: place ? (/camp/i.test(place.name) ? 'Camping' as const : 'Accommodation' as const) : 'Not decided yet' as const,
+      } : {}),
+      saved: place && item.stops.some((stop) => stop.placeId === place.id) || index === activeDayIndex ? false : item.saved,
+    })));
+  };
   const schedule = useMemo(() => getDaySchedule(day, finalDay), [day, finalDay]);
   const allStopNames = useMemo(() => days.flatMap((item) => item.stops.map((stop) => stop.name)), [days]);
   const addSuggestions = useMemo(() => {
@@ -100,13 +117,13 @@ export function ItineraryPlanningScreen({ draft, mode, days, activeDayIndex, onA
 
   const updateOvernight = (type: OvernightType) => {
     const defaultLocations: Record<OvernightType, string> = {
-      Accommodation: 'Harbour View Hotel, George Town',
-      Camping: 'Teluk Bahang campsite',
+      Accommodation: '',
+      Camping: '',
       'Overnight Transport': 'Overnight transport',
       Other: 'Location to confirm',
       'Not decided yet': '',
     };
-    updateDay({ ...day, overnightType: type, overnightLocation: defaultLocations[type], saved: false });
+    updateDay({ ...day, overnightPlaceId: undefined, overnightType: type, overnightLocation: defaultLocations[type], saved: false });
   };
 
   const recommended = useMemo(() => recommendedStopOrder(day.stops), [day.stops]);
@@ -116,7 +133,8 @@ export function ItineraryPlanningScreen({ draft, mode, days, activeDayIndex, onA
     const nextDays = days.map((item, index) => index === activeDayIndex ? { ...day, saved: true } : item);
     onDaysChange(nextDays);
     onToast(`Day ${day.dayNumber} saved`);
-    if (nextDays.every((item) => item.saved)) onPlanComplete();
+    if (finalDay) onPlanComplete();
+    else onActiveDayChange(activeDayIndex + 1);
   };
 
   return (
@@ -126,7 +144,7 @@ export function ItineraryPlanningScreen({ draft, mode, days, activeDayIndex, onA
         <section className="itinerary-intro">
           <div><p className="eyebrow">{mode === 'group' ? 'Group trip' : 'Solo trip'} · {draft.name}</p><h2 id="itinerary-title">Shape each day</h2></div>
           <span className="recommendation-label"><Route aria-hidden="true" size={14} /> Recommended order</span>
-          <p>The route is a starting point. You decide what to keep and change.</p>
+          <p>A suggested route, ready for your changes.</p>
         </section>
 
         <div className="day-tabs" role="tablist" aria-label="Trip days">
@@ -171,13 +189,13 @@ export function ItineraryPlanningScreen({ draft, mode, days, activeDayIndex, onA
         {finalDay ? (
           <section className="end-anchor end-anchor--home"><span><Route aria-hidden="true" size={21} /></span><div><p>End of Day {day.dayNumber}</p><h3>Return home · Trip ends</h3><small>Estimated finish {schedule.finish}</small></div></section>
         ) : (
-          <section className="end-anchor" aria-labelledby="overnight-title"><span><BedDouble aria-hidden="true" size={21} /></span><div className="overnight-fields"><p>End of Day {day.dayNumber}</p><h3 id="overnight-title">Overnight Stay</h3><label><span>Stay type</span><select name={`overnight-type-${day.id}`} value={day.overnightType || 'Not decided yet'} onChange={(event) => updateOvernight(event.target.value as OvernightType)}><option>Accommodation</option><option>Camping</option><option>Overnight Transport</option><option>Other</option><option>Not decided yet</option></select></label><label><span>Location</span><input name={`overnight-location-${day.id}`} autoComplete="off" placeholder="Add an end-of-day location…" value={day.overnightLocation} onChange={(event) => updateDay({ ...day, overnightLocation: event.target.value, saved: false })} /></label><small>Finish {schedule.finish} · Back at stay {schedule.finish}</small></div></section>
+          <section className="end-anchor" aria-labelledby="overnight-title"><span><BedDouble aria-hidden="true" size={21} /></span><div className="overnight-fields"><p>End of Day {day.dayNumber}</p><h3 id="overnight-title">Overnight Stay</h3><label><span>Choose a confirmed place</span><select name={`overnight-place-${day.id}`} value={day.overnightPlaceId || ''} onChange={(event) => selectOvernightPlace(event.target.value)}><option value="">Manual location / Not decided yet</option>{overnightChoices.map((place) => <option key={place.id} value={place.id}>{place.name}</option>)}</select></label><label><span>Stay type</span><select name={`overnight-type-${day.id}`} value={day.overnightType || 'Not decided yet'} onChange={(event) => updateOvernight(event.target.value as OvernightType)}><option>Accommodation</option><option>Camping</option><option>Overnight Transport</option><option>Other</option><option>Not decided yet</option></select></label><label><span>Location</span><input name={`overnight-location-${day.id}`} autoComplete="off" placeholder="Add an end-of-day location…" value={day.overnightLocation} onChange={(event) => updateDay({ ...day, overnightPlaceId: undefined, overnightLocation: event.target.value, saved: false })} /></label><small>Finish {schedule.finish} · Back at stay {schedule.finish}</small></div></section>
         )}
 
         <section className="day-summary" aria-label="Day summary"><div><span>Day completion</span><strong>{schedule.finish}</strong></div><div><span>Travel time</span><strong>{durationLabel(schedule.totalTravelMinutes)}</strong></div><div><span>Distance</span><strong>{schedule.totalDistance} km</strong></div></section>
 
         <Button type="button" variant="secondary" fullWidth onClick={() => setOptimizeOpen(true)}><Route aria-hidden="true" size={18} /> Optimize Route</Button>
-        <div className="itinerary-bottom-actions"><Button type="button" variant="secondary" onClick={onRoutePreview}><Map aria-hidden="true" size={18} /> Route Preview</Button><Button type="button" onClick={saveDay}><Check aria-hidden="true" size={18} /> Save Day</Button></div>
+        <div className="itinerary-bottom-actions"><Button type="button" variant="secondary" onClick={onRoutePreview}><Map aria-hidden="true" size={18} /> Route Preview</Button><Button type="button" onClick={saveDay}><Check aria-hidden="true" size={18} /> {finalDay ? 'Finalize Itinerary' : 'Save Day'}</Button></div>
         </div>
       </div>
 
@@ -192,7 +210,7 @@ function AddPlaceSheet({ query, suggestions, onQueryChange, onSubmit, onSelect, 
   return (
     <Modal onClose={onClose} labelledBy="add-place-title" closeOnBackdrop>
         <div className="sheet-handle" aria-hidden="true" /><button className="sheet-close" type="button" onClick={onClose} aria-label="Close Add Place"><X aria-hidden="true" size={20} /></button>
-        <span className="sheet-icon sheet-icon--teal"><Plus aria-hidden="true" size={22} /></span><p className="eyebrow">Itinerary change</p><h2 id="add-place-title">Add Place</h2><p>Search a known place or enter another idea. You will review the route impact before it is added.</p>
+        <span className="sheet-icon sheet-icon--teal"><Plus aria-hidden="true" size={22} /></span><p className="eyebrow">Itinerary change</p><h2 id="add-place-title">Add Place</h2><p>Choose a place, then review its route impact.</p>
         <form className="itinerary-place-form" onSubmit={onSubmit}><label htmlFor="itinerary-place-query">Place</label><div><input id="itinerary-place-query" name="itineraryPlace" autoComplete="off" placeholder="Try “Penang Hill”…" value={query} onChange={(event) => onQueryChange(event.target.value)} /><Button type="submit" disabled={!query.trim()}>Preview</Button></div></form>
         {suggestions.length ? <div className="itinerary-place-options" aria-label="Available places">{suggestions.map((place) => <button type="button" key={place.name} onClick={() => onSelect(place)}><span><strong>{place.name}</strong><small>{place.location}</small></span><Plus aria-hidden="true" size={17} /></button>)}</div> : null}
         <Button type="button" variant="secondary" fullWidth onClick={onClose}>Cancel</Button>

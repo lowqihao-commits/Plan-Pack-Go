@@ -16,6 +16,7 @@ export function RoutePreviewScreen({ days, activeDayIndex, onDaysChange, onBack,
   const [optimizeOpen, setOptimizeOpen] = useState(false);
   const day = days[activeDayIndex];
   const finalDay = activeDayIndex === days.length - 1;
+  const hasEndpointSegment = day.stops.length > 0 || (!finalDay && Boolean(day.overnightPlaceId));
   const schedule = useMemo(() => getDaySchedule(day, finalDay), [day, finalDay]);
   const recommended = useMemo(() => recommendedStopOrder(day.stops), [day.stops]);
   const endpoint = finalDay ? 'Return home · Trip ends' : `Overnight Stay · ${day.overnightLocation || day.overnightType || 'Not decided yet'}`;
@@ -37,7 +38,7 @@ export function RoutePreviewScreen({ days, activeDayIndex, onDaysChange, onBack,
     <Page className="flow-page route-preview-page" labelledBy="route-preview-title">
       <AppBar title={`Day ${day.dayNumber} Route`} onBack={onBack} />
       <div className="route-preview-body">
-        <section className="route-preview-heading"><div><p className="eyebrow">Day {day.dayNumber} route</p><h2 id="route-preview-title">Route Preview</h2></div><span>{day.stops.length} {day.stops.length === 1 ? 'stop' : 'stops'}</span><p>Check the order, travel time and end point for this day.</p></section>
+        <section className="route-preview-heading"><div><p className="eyebrow">Day {day.dayNumber} route</p><h2 id="route-preview-title">Route Preview</h2></div><span>{day.stops.length} {day.stops.length === 1 ? 'stop' : 'stops'}</span><p>Review your route, travel time and endpoint.</p></section>
 
         <section className="mock-map" aria-label={`Map-like route for Day ${day.dayNumber}`}>
           <span className="mock-road mock-road--one" aria-hidden="true" /><span className="mock-road mock-road--two" aria-hidden="true" /><span className="mock-road mock-road--three" aria-hidden="true" />
@@ -51,9 +52,9 @@ export function RoutePreviewScreen({ days, activeDayIndex, onDaysChange, onBack,
         <section className="route-overview" aria-label="Route totals"><div><span>Total travel time</span><strong>{durationLabel(schedule.totalTravelMinutes)}</strong></div><div><span>Total distance</span><strong>{schedule.totalDistance} km</strong></div><div><span>{finalDay ? 'Estimated finish' : 'Estimated return'}</span><strong>{schedule.finish}</strong></div></section>
 
         <section className="route-segments" aria-labelledby="segments-title">
-          <div className="section-heading"><h3 id="segments-title">Route segments</h3><span>{schedule.stops.length + (day.stops.length ? 1 : 0)}</span></div>
+          <div className="section-heading"><h3 id="segments-title">Route segments</h3><span>{schedule.stops.length + (hasEndpointSegment ? 1 : 0)}</span></div>
           {schedule.stops.map(({ stop, segment }, index) => <article className="segment-card" key={stop.id}><span className="segment-number">{index + 1}</span><div><strong>{index === 0 ? 'Departure' : day.stops[index - 1].name}</strong><small>to {stop.name}</small></div><div><strong>{segment.minutes} min</strong><small>{segment.distance} km</small></div></article>)}
-          {day.stops.length ? <article className="segment-card segment-card--endpoint"><span className="segment-number"><MapPin aria-hidden="true" size={15} /></span><div><strong>{day.stops[day.stops.length - 1].name}</strong><small>to {endpoint}</small></div><div><strong>{schedule.returnSegment.minutes} min</strong><small>{schedule.returnSegment.distance} km</small></div></article> : <div className="empty-state"><MapPin aria-hidden="true" size={22} /><h3>No route segments yet</h3><p>Add a place in Itinerary Planning first.</p></div>}
+          {hasEndpointSegment ? <article className="segment-card segment-card--endpoint"><span className="segment-number"><MapPin aria-hidden="true" size={15} /></span><div><strong>{day.stops.at(-1)?.name || 'Departure'}</strong><small>to {endpoint}</small></div><div><strong>{schedule.returnSegment.minutes} min</strong><small>{schedule.returnSegment.distance} km</small></div></article> : <div className="empty-state"><MapPin aria-hidden="true" size={22} /><h3>No route segments yet</h3><p>Add a place in Itinerary Planning first.</p></div>}
         </section>
 
         <div className="route-preview-actions"><Button type="button" variant="secondary" onClick={onBack}>Reorder Stops</Button><Button type="button" onClick={() => setOptimizeOpen(true)}><Route aria-hidden="true" size={17} /> Optimize Route</Button></div>

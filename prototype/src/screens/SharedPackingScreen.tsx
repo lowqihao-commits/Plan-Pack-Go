@@ -24,7 +24,7 @@ export function SharedPackingScreen({ items, members, onBack, onClaim, onAssign,
   const joinedMembers = activeTripMembers(members);
   const unresolved = items.filter((item) => quantities(item).covered < item.suggestedQuantity).length;
   return <Page className="shared-packing-page" labelledBy="shared-packing-title"><AppBar title="Shared Packing" onBack={onBack} /><div className="shared-packing-body">
-    <section className="shared-heading"><div><p className="eyebrow">Group packing</p><h2 id="shared-packing-title">Coordinate what the group brings</h2><p>Claim an item or let the Admin assign it. Extras stay visible and are never removed automatically.</p></div>{unresolved ? <img src="/assets/mascot-warning-transparent.png" width="84" height="84" alt="" /> : null}</section>
+    <section className="shared-heading"><div><p className="eyebrow">Group packing</p><h2 id="shared-packing-title">Coordinate what the group brings</h2><p>Claim items. Admin assigns. Extras stay.</p></div>{unresolved ? <img src="/assets/mascot-warning-transparent.png" width="84" height="84" alt="" /> : null}</section>
     {unresolved ? <div className="shared-alert" role="status"><AlertTriangle aria-hidden="true" size={17} /><span>{unresolved} shared {unresolved === 1 ? 'item needs' : 'items need'} more coverage.</span></div> : null}
     <div className="shared-item-list">{items.map((item) => <SharedItemCard key={item.id} item={item} members={members} onClaim={onClaim} onAssign={() => setAssignItemId(item.id)} onMarkPacked={onMarkPacked} />)}</div>
     <Button type="button" variant="secondary" fullWidth onClick={() => setAddOpen(true)}><Plus aria-hidden="true" size={18} /> Add Shared Item</Button>

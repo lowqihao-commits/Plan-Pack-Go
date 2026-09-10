@@ -22,6 +22,15 @@
 * { box-sizing: border-box; }
 html, body, #root { min-height: 100%; margin: 0; }
 body { min-width: 320px; min-height: 100dvh; display: grid; place-items: center; background: var(--mint); }
+#root { width: 100%; min-width: 0; display: flex; justify-content: center; }
+.app-shell { flex: 0 0 auto; }
+.outfit-card + .outfit-card { margin-top: 16px; }
+.outfit-photo { display: block; width: 100%; max-height: 280px; object-fit: contain; border-radius: 12px; margin: 12px 0; }
+.planned-outfits { margin-top: 24px; }
+.planned-outfit { margin-top: 12px; padding: 16px; border: 1px solid var(--line); border-radius: 16px; }
+.photo-actions label { position: relative; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 44px; cursor: pointer; color: var(--teal-dark); background: var(--soft-teal); border: 1px solid #c2dfdc; border-radius: 10px; font-size: 12px; font-weight: 650; }
+.photo-actions input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.photo-actions label:focus-within { outline: 3px solid var(--teal); outline-offset: 2px; }
 button, input, select, textarea { font: inherit; }
 button, a, input, select, textarea { touch-action: manipulation; -webkit-tap-highlight-color: rgba(97, 192, 191, 0.2); }
 button { color: inherit; }
@@ -570,7 +579,7 @@ p { color: var(--muted); font-size: 15px; line-height: 1.55; }
 .timeline-row--end > div { background: var(--cream); border-color: #e7d3c9; }
 .detail-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 9px; }
 
-.packing-hero { position: relative; min-height: 190px; overflow: hidden; padding: 20px 108px 62px 20px; background: var(--soft-teal); border: 1px solid #b9dbd7; border-radius: 16px; box-shadow: inset 0 4px 0 var(--teal); }
+.packing-hero { position: relative; min-height: 190px; overflow: hidden; padding: 20px 108px 88px 20px; background: var(--soft-teal); border: 1px solid #b9dbd7; border-radius: 16px; box-shadow: inset 0 4px 0 var(--teal); }
 .packing-hero h2 { margin-bottom: 8px; font-size: 22px; }
 .packing-hero p:not(.eyebrow) { margin: 0; font-size: 13px; line-height: 1.5; }
 .packing-hero > img { position: absolute; right: 10px; top: 36px; object-fit: contain; }
@@ -580,7 +589,7 @@ p { color: var(--muted); font-size: 15px; line-height: 1.55; }
 .packing-progress-card > div { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 10px; font-size: 13px; font-weight: 700; }
 .packing-progress-card > div strong { font-size: 22px; }
 .packing-progress-card p { margin: 8px 0 0; font-size: 13px; }
-.packing-home-body > section:nth-of-type(3) { margin-top: 28px; }
+.packing-home-body > section:nth-of-type(3) { margin-top: 24px; }
 .packing-module-grid { display: grid; gap: 10px; }
 .packing-module { min-height: 76px; display: grid; grid-template-columns: 44px minmax(0,1fr) 20px; align-items: center; gap: 11px; padding: 13px; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-card); }
 .packing-module:hover { border-color: #91cbc7; background: #fbfdfd; }
@@ -614,7 +623,7 @@ p { color: var(--muted); font-size: 15px; line-height: 1.55; }
 .group-progress-row > span:last-child small { color: var(--muted); font-size: 12px; }
 .group-progress-card > p { margin: 10px 0 0; font-size: 12px; }
 
-.suggestions-heading, .outfit-heading, .reminders-heading, .delta-heading { display: grid; grid-template-columns: 48px minmax(0,1fr); gap: 12px; align-items: start; margin-bottom: 24px; }
+.suggestions-heading, .outfit-heading, .reminders-heading, .delta-heading { display: grid; grid-template-columns: 48px minmax(0,1fr); gap: 12px; align-items: start; margin-bottom: 20px; }
 .suggestions-heading__icon, .outfit-heading > span, .reminders-heading > span, .delta-heading > span { width: 48px; height: 48px; display: grid; place-items: center; color: var(--teal-dark); background: var(--mint); border-radius: 14px; }
 .suggestions-heading h2, .outfit-heading h2, .reminders-heading h2, .delta-heading h2 { margin-bottom: 6px; font-size: 22px; }
 .suggestions-heading p:last-child, .outfit-heading p:last-child, .reminders-heading p:last-child, .delta-heading p:last-child { margin-bottom: 0; font-size: 13px; }

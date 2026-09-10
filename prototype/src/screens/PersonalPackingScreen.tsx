@@ -1,11 +1,11 @@
 import { Lock, Minus, Plus, Shirt, Trash2, X } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { AppBar, Button, Modal, Page, ProgressBar } from '../components/ui';
-import type { PackingCategory, PersonalPackingItem, TravelMode } from '../types';
+import type { OutfitDayPlan, PackingCategory, PersonalPackingItem, TravelMode } from '../types';
 
 const categories: PackingCategory[] = ['Essentials', 'Clothing', 'Toiletries', 'Electronics', 'Activity Gear', 'Other'];
 
-export function PersonalPackingScreen({ mode, items, onBack, onToggle, onQuantity, onRemove, onAdd, onOutfit }: { mode: TravelMode; items: PersonalPackingItem[]; onBack: () => void; onToggle: (id: string) => void; onQuantity: (id: string, quantity: number) => void; onRemove: (id: string) => void; onAdd: (name: string, category: PackingCategory, quantity: number) => void; onOutfit: () => void }) {
+export function PersonalPackingScreen({ mode, items, outfitPlans, onBack, onToggle, onQuantity, onRemove, onAdd, onOutfit }: { mode: TravelMode; items: PersonalPackingItem[]; outfitPlans: OutfitDayPlan[]; onBack: () => void; onToggle: (id: string) => void; onQuantity: (id: string, quantity: number) => void; onRemove: (id: string) => void; onAdd: (name: string, category: PackingCategory, quantity: number) => void; onOutfit: () => void }) {
   const [addOpen, setAddOpen] = useState(false);
   const packed = items.filter((item) => item.packed).length;
   const total = items.length;
@@ -14,8 +14,8 @@ export function PersonalPackingScreen({ mode, items, onBack, onToggle, onQuantit
     <Page className="personal-packing-page" labelledBy="personal-packing-title">
       <AppBar title="Personal Packing" onBack={onBack} />
       <div className="personal-packing-body">
-        <section className="checklist-progress" aria-labelledby="personal-packing-title"><div><div><p className="eyebrow">Your private checklist</p><h2 id="personal-packing-title">{packed} / {total} packed</h2></div><strong>{progress}%</strong></div><ProgressBar value={progress} label="Personal packing progress" /><p>{total - packed} Unchecked · Checked items can be changed anytime.</p></section>
-        {mode === 'group' ? <div className="privacy-note"><Lock aria-hidden="true" size={16} /><span>Only you can see these item names. The group sees your progress percentage only.</span></div> : null}
+        <section className="checklist-progress" aria-labelledby="personal-packing-title"><div><div><p className="eyebrow">Your private checklist</p><h2 id="personal-packing-title">{packed} / {total} packed</h2></div><strong>{progress}%</strong></div><ProgressBar value={progress} label="Personal packing progress" /><p>{total - packed} Unchecked · Change packed status anytime.</p></section>
+        {mode === 'group' ? <div className="privacy-note"><Lock aria-hidden="true" size={16} /><span>Your items stay private. The group sees only your progress.</span></div> : null}
 
         <div className="checklist-categories">{categories.map((category) => {
           const categoryItems = items.filter((item) => item.category === category);
@@ -25,6 +25,7 @@ export function PersonalPackingScreen({ mode, items, onBack, onToggle, onQuantit
         {!items.length ? <div className="empty-state"><h3>Your checklist is empty</h3><p>Add an AI suggestion or create a custom item.</p></div> : null}
         <Button type="button" variant="secondary" fullWidth onClick={() => setAddOpen(true)}><Plus aria-hidden="true" size={18} /> Add Custom Item</Button>
         <button className="settings-row outfit-entry" type="button" onClick={onOutfit}><span><Shirt aria-hidden="true" size={19} /></span><div><strong>Outfit Planning</strong><small>Optional help for clothing quantities and reuse</small></div></button>
+        {outfitPlans.some((day) => day.outfits.some((outfit) => outfit.decision === 'added' || outfit.photoUrl)) ? <section className="planned-outfits" aria-label="Your private planned outfits"><h2>Planned Outfits</h2><p>Your outfit references stay private.</p>{outfitPlans.flatMap((day) => day.outfits.map((outfit, index) => outfit.decision === 'added' || outfit.photoUrl ? <article className="planned-outfit" key={outfit.id}><h3>Day {day.dayNumber} · Outfit {index + 1}</h3>{outfit.photoUrl ? <img className="outfit-photo" src={outfit.photoUrl} alt={`Day ${day.dayNumber}, Outfit ${index + 1}`} /> : null}<p>{outfit.items.join(' · ')}</p>{outfit.notes ? <p>{outfit.notes}</p> : null}</article> : null))}</section> : null}
       </div>
       {addOpen ? <AddCustomItemSheet onClose={() => setAddOpen(false)} onAdd={(name, category, quantity) => { onAdd(name, category, quantity); setAddOpen(false); }} /> : null}
     </Page>

@@ -21,7 +21,7 @@ export function MyTripsScreen({ profile, trips, onAddTrip, onOpenTrip, onProfile
       <section className="welcome-row"><p className="eyebrow">Welcome back, {profile.name.split(' ')[0]}</p><h1 id="trips-title">Where to next?</h1></section>
       <button className="new-trip-card" type="button" onClick={onAddTrip}>
         <span className="new-trip-card__icon"><Plus aria-hidden="true" size={24} /></span>
-        <span><strong>Add New Trip</strong><small>Start with a name, then shape the plan</small></span>
+        <span><strong>Add New Trip</strong><small>Name it, then plan your trip</small></span>
       </button>
       <section className="trip-section" aria-labelledby="existing-trips-title">
         <div className="section-heading"><h2 id="existing-trips-title">My Trips</h2><span>{countLabel(visibleTrips.length, 'trip')}</span></div>
@@ -64,7 +64,7 @@ export function TripTypeScreen({ selected, onSelect, onBack, onContinue }: { sel
     <Page className="flow-page" labelledBy="trip-type-title">
       <AppBar title="Create a Trip" meta="2 of 3" onBack={onBack} />
       <div className="flow-body">
-        <section className="flow-heading"><h2 id="trip-type-title">Who is travelling?</h2><p>Choose the setup that matches this trip.</p></section>
+        <section className="flow-heading"><h2 id="trip-type-title">Who is travelling?</h2></section>
         <div className="choice-list" role="radiogroup" aria-label="Trip type">
           <button className={`choice-card ${selected === 'solo' ? 'choice-card--selected' : ''}`} type="button" role="radio" aria-checked={selected === 'solo'} onClick={() => onSelect('solo')}><span className="choice-card__icon"><UserRound aria-hidden="true" size={27} /></span><span className="choice-card__copy"><strong>Solo Travel</strong><small>Plan and pack just for yourself.</small></span><span className="choice-card__check">{selected === 'solo' ? <Check aria-hidden="true" size={17} /> : null}</span></button>
           <button className={`choice-card ${selected === 'group' ? 'choice-card--selected' : ''}`} type="button" role="radio" aria-checked={selected === 'group'} onClick={() => onSelect('group')}><span className="choice-card__icon choice-card__icon--group"><UsersRound aria-hidden="true" size={27} /></span><span className="choice-card__copy"><strong>Group Travel</strong><small>Plan together and share responsibilities.</small></span><span className="choice-card__check">{selected === 'group' ? <Check aria-hidden="true" size={17} /> : null}</span></button>
@@ -97,7 +97,7 @@ export function GroupInviteScreen({ members, context, inviteActivity, onInviteAc
     <Page className="flow-page" labelledBy="invite-title">
       <AppBar title="Invite Members" meta="Group Trip" onBack={onBack} />
       <div className="flow-body">
-        <section className="flow-heading flow-heading--tight"><h2 id="invite-title">Invite Members</h2><p>Share one trip link. Members can join later, so you can keep planning now.</p></section>
+        <section className="flow-heading flow-heading--tight"><h2 id="invite-title">Invite Members</h2><p>Share the link. Members can join while you plan.</p></section>
         <section className="invite-card" aria-labelledby="invite-link-title">
           <div className="card-title-row"><span className="mini-icon"><Link2 aria-hidden="true" size={18} /></span><h3 id="invite-link-title">Invite link</h3></div>
           <div className="copy-row"><input name="inviteLink" aria-label="Invite link" value={inviteLink} readOnly /></div>
@@ -112,7 +112,7 @@ export function GroupInviteScreen({ members, context, inviteActivity, onInviteAc
       </div>
       {shareOpen ? (
         <Modal onClose={() => setShareOpen(false)} labelledBy="send-invite-title" closeOnBackdrop>
-          <div className="sheet-handle" aria-hidden="true" /><button className="sheet-close" type="button" onClick={() => setShareOpen(false)} aria-label="Close invite sharing"><X aria-hidden="true" size={20} /></button><span className="sheet-icon"><Send aria-hidden="true" size={22} /></span><p className="eyebrow">Share trip invite</p><h2 id="send-invite-title">Send Invite Link</h2><p>The link is ready to share. Sarah Lim will appear as Pending, and you can keep planning while she responds.</p><div className="share-link-preview"><Link2 aria-hidden="true" size={17} /><span>{inviteLink}</span></div><div className="sheet-actions"><Button type="button" variant="secondary" onClick={() => setShareOpen(false)}>Cancel</Button><Button type="button" onClick={sendInvite}>Send Link</Button></div>
+          <div className="sheet-handle" aria-hidden="true" /><button className="sheet-close" type="button" onClick={() => setShareOpen(false)} aria-label="Close invite sharing"><X aria-hidden="true" size={20} /></button><span className="sheet-icon"><Send aria-hidden="true" size={22} /></span><p className="eyebrow">Share trip invite</p><h2 id="send-invite-title">Send Invite Link</h2><p>Sarah Lim will appear as Pending until she joins.</p><div className="share-link-preview"><Link2 aria-hidden="true" size={17} /><span>{inviteLink}</span></div><div className="sheet-actions"><Button type="button" variant="secondary" onClick={() => setShareOpen(false)}>Cancel</Button><Button type="button" onClick={sendInvite}>Send Link</Button></div>
         </Modal>
       ) : null}
       {removeTarget ? <Modal onClose={() => setRemoveTarget(null)} labelledBy="remove-member-title" className="confirm-dialog" backdropClassName="modal-backdrop--centered" role="alertdialog"><span className="sheet-icon"><UserMinus aria-hidden="true" size={22} /></span><h2 id="remove-member-title">Remove {removeTarget.name.split(' ')[0]} from this trip?</h2><p>The member will disappear from the active group. Any Shared Packing responsibility they own becomes unresolved.</p><div className="sheet-actions"><Button type="button" variant="secondary" onClick={() => setRemoveTarget(null)}>Cancel</Button><Button type="button" variant="danger" onClick={() => { onRemoveMember(removeTarget.id); setRemoveTarget(null); }}>Remove Member</Button></div></Modal> : null}
