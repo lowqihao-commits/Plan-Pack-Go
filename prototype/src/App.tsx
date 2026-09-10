@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AppShell, Toast } from './components/ui';
 import { LoginScreen, SignUpScreen, SplashScreen } from './screens/AuthScreens';
 import { GroupInviteScreen, MyTripsScreen, TripDatesScreen, TripNameScreen, TripTypeScreen } from './screens/TripScreens';
@@ -130,6 +130,30 @@ export default function App() {
   const [activeAdjustment, setActiveAdjustment] = useState<AdjustmentKind | null>(null);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [toast, setToast] = useState('');
+
+  // Each closure captures this trip's immutable state, including private photos.
+  // Switching trips restores that snapshot instead of applying the sample seeds.
+  const tripSessions = useRef(new Map<string, () => void>());
+  useEffect(() => {
+    if (!activeTripId) return;
+    tripSessions.current.set(activeTripId, () => {
+      setDraft(draft);
+      setSoloPlaces(soloPlaces); setGroupPlaces(groupPlaces);
+      setGroupMembers(groupMembers); setRemovedMemberIds(removedMemberIds);
+      setInviteActivity(inviteActivity); setGroupRatings(groupRatings);
+      setGroupSelectedIds(groupSelectedIds); setSoloSelectedIds(soloSelectedIds);
+      setInclusionRequests(inclusionRequests);
+      setFinalReviewInitialized(finalReviewInitialized); setSoloFinalReviewInitialized(soloFinalReviewInitialized);
+      setFinalPlacesConfirmed(finalPlacesConfirmed); setSoloFinalPlacesConfirmed(soloFinalPlacesConfirmed);
+      setConfirmedPlaces(confirmedPlaces); setItineraryDays(itineraryDays); setActiveDayIndex(activeDayIndex);
+      setTripStatus(tripStatus); setPackingSuggestions(packingSuggestions);
+      setPersonalPackingItems(personalPackingItems); setSharedPackingItems(sharedPackingItems);
+      setReminderSettings(reminderSettings); setOutfitPlans(outfitPlans);
+      setActiveOutfitDayIndex(activeOutfitDayIndex); setPackingDelta(packingDelta); setExpenses(expenses);
+      setConfirmationOpen(false); setActiveAdjustment(null);
+      setParticipationMemberId(null); setReassignItemIds([]);
+    });
+  });
 
   const replace = (next: ScreenName) => {
     window.history.replaceState(null, '', `#${routes[next]}`);
@@ -313,11 +337,12 @@ export default function App() {
   };
 
   const continueToItinerary = () => {
-    const nextDays = itineraryDays.length ? itineraryDays : createRecommendedItinerary(confirmedPlaces, draft);
+    const nextDays = createRecommendedItinerary(confirmedPlaces, draft);
     setItineraryDays(nextDays);
-    if (!packingSuggestions.length) setPackingSuggestions(createPackingSuggestions(nextDays, draft.mode || 'solo'));
-    if (!outfitPlans.length) setOutfitPlans(createOutfitPlans(nextDays));
+    setPackingSuggestions(createPackingSuggestions(nextDays, draft.mode || 'solo').map((suggestion) => ({ ...suggestion, decision: packingSuggestions.find((item) => item.id === suggestion.id)?.decision || 'pending' })));
+    setOutfitPlans(createOutfitPlans(nextDays).map((plan) => ({ ...plan, outfits: outfitPlans.find((item) => item.dayNumber === plan.dayNumber)?.outfits || plan.outfits })));
     setActiveDayIndex(0);
+    setActiveOutfitDayIndex(0);
     setConfirmationOpen(false);
     navigate('itinerary-planning');
   };
@@ -343,6 +368,18 @@ export default function App() {
   };
 
   const openDemoTrip = (trip: TripSummary) => {
+    const restore = tripSessions.current.get(trip.id);
+    if (restore) {
+      restore();
+      setGroupMembers((current) => current.map((member) => member.isCurrentUser ? { ...member, name: profile.name, initials: profile.initials } : member));
+      setActiveTripId(trip.id);
+      navigate(trip.mode === 'group' ? 'group-dashboard' : 'solo-dashboard');
+      return;
+    }
+    if (!trips.some((sample) => sample.id === trip.id)) {
+      setToast('This trip is no longer available in this session');
+      return;
+    }
     const nextDraft: TripDraft = { name: trip.name, mode: trip.mode, startDate: trip.startDate, endDate: trip.endDate };
     const demoPlaces: Place[] = trip.mode === 'group'
       ? placeOptions.slice(0, 4).map((place, index) => ({ ...place, id: `demo-group-${index + 1}`, addedBy: [profile.name.split(' ')[0], 'Mei', 'Daniel', 'Aisha'][index] }))
@@ -364,6 +401,8 @@ export default function App() {
     setGroupPlaces(trip.mode === 'group' ? demoPlaces : []);
     setConfirmedPlaces(demoPlaces);
     setGroupRatings(trip.mode === 'group' ? ensureRatings(demoPlaces, {}, eligiblePreferenceMembers(nextMembers)) : {});
+    setInclusionRequests({});
+    setConfirmationOpen(false);
     setGroupSelectedIds(trip.mode === 'group' ? demoPlaces.map((place) => place.id) : []);
     setSoloSelectedIds(trip.mode === 'solo' ? demoPlaces.map((place) => place.id) : []);
     setFinalReviewInitialized(trip.mode === 'group');
@@ -388,6 +427,7 @@ export default function App() {
   };
 
   const openDashboard = () => {
+    setItineraryDays((current) => current.map((day) => ({ ...day, saved: true })));
     const tripId = activeTripId || `trip-${Date.now()}`;
     if (!activeTripId) setActiveTripId(tripId);
     if (draft.mode && draft.name && draft.startDate && draft.endDate) {
@@ -415,6 +455,8 @@ export default function App() {
 
   const updateItineraryDays = (days: ItineraryDay[]) => {
     setItineraryDays(days);
+    setPackingSuggestions((current) => createPackingSuggestions(days, draft.mode || 'solo').map((suggestion) => ({ ...suggestion, decision: current.find((item) => item.id === suggestion.id)?.decision || 'pending' })));
+    setOutfitPlans((current) => createOutfitPlans(days).map((plan) => ({ ...plan, outfits: current.find((item) => item.dayNumber === plan.dayNumber)?.outfits || plan.outfits })));
     if (tripStatus !== 'Planning') setPackingDelta(initialDeltaState);
   };
 
@@ -458,9 +500,10 @@ export default function App() {
   };
 
   const openDashboardAdjustment = (kind: AdjustmentKind) => {
-    const pattern = kind === 'weather' ? /Entopia|Beach|Market/i : /Penang Hill/i;
+    const pattern = kind === 'weather' ? /Entopia|Beach|Market|Hill/i : /Penang Hill/i;
     const matchingIndex = itineraryDays.findIndex((day) => day.stops.some((stop) => pattern.test(stop.name)));
-    if (matchingIndex >= 0) setActiveDayIndex(matchingIndex);
+    const firstPlannedDay = itineraryDays.findIndex((day) => day.stops.length > 0);
+    setActiveDayIndex(matchingIndex >= 0 ? matchingIndex : Math.max(0, firstPlannedDay));
     setActiveAdjustment(kind);
     navigate('itinerary-detail');
   };
@@ -482,6 +525,7 @@ export default function App() {
   };
 
   const logout = () => {
+    setActiveTripId(null);
     setDraft(emptyDraft);
     setSoloPlaces([]);
     setGroupPlaces([]);
@@ -530,16 +574,17 @@ export default function App() {
   }));
 
   const updateOutfitPlan = (plan: OutfitDayPlan) => setOutfitPlans((current) => current.map((item) => item.dayNumber === plan.dayNumber ? plan : item));
-  const addOutfit = (dayNumber: number) => {
+  const addOutfit = (dayNumber: number, outfitId: string) => {
     const plan = outfitPlans.find((item) => item.dayNumber === dayNumber);
-    if (!plan) return;
-    updateOutfitPlan({ ...plan, decision: 'added' });
-    setPersonalPackingItems((current) => [...current, ...plan.items.filter((name) => !current.some((item) => item.name.toLowerCase() === name.toLowerCase())).map((name) => ({ id: `outfit-${dayNumber}-${name.toLowerCase().replace(/\s+/g, '-')}`, name, category: 'Clothing' as const, quantity: 1, packed: false, reason: `Day ${dayNumber} outfit`, source: 'Outfit plan' as const }))]);
+    const outfit = plan?.outfits.find((item) => item.id === outfitId);
+    if (!plan || !outfit) return;
+    updateOutfitPlan({ ...plan, outfits: plan.outfits.map((item) => item.id === outfitId ? { ...item, decision: 'added' } : item) });
+    setPersonalPackingItems((current) => [...current, ...outfit.items.filter((name) => !current.some((item) => item.name.toLowerCase() === name.toLowerCase())).map((name) => ({ id: `outfit-${outfitId}-${name.toLowerCase().replace(/\s+/g, '-')}`, name, category: 'Clothing' as const, quantity: 1, packed: false, reason: `Day ${dayNumber} outfit`, source: 'Outfit plan' as const }))]);
     setToast(`Day ${dayNumber} outfit added · Reused clothing counts once`);
   };
 
   const applyPackingDelta = () => {
-    if (packingDelta.newItemDecision === 'add') setPersonalPackingItems((current) => current.some((item) => item.name === 'Waterproof phone pouch') ? current : [...current, { id: 'delta-waterproof-pouch', name: 'Waterproof phone pouch', category: 'Electronics', quantity: 1, packed: false, reason: 'Rain update for Day 3', source: 'AI suggestion' }]);
+    if (packingDelta.newItemDecision === 'add') setPersonalPackingItems((current) => current.some((item) => item.name === 'Waterproof phone pouch') ? current : [...current, { id: 'delta-waterproof-pouch', name: 'Waterproof phone pouch', category: 'Electronics', quantity: 1, packed: false, reason: 'Rain protection for outdoor activities', source: 'AI suggestion' }]);
     if (packingDelta.oldItemDecision === 'remove') setPersonalPackingItems((current) => current.filter((item) => !['Sports shoes', 'Comfortable walking shoes'].includes(item.name)));
     setPackingDelta((current) => ({ ...current, reviewed: true }));
     setToast('Packing updates applied without resetting your checklist');
@@ -578,7 +623,7 @@ export default function App() {
       content = <GroupInviteScreen members={groupMembers} context={inviteContext} inviteActivity={inviteActivity} onInviteActivityChange={setInviteActivity} onMembersChange={updateGroupMembers} onMarkJoined={markMemberJoined} onRemoveMember={removeGroupMember} onBack={goBack} onContinue={() => inviteContext === 'creation' ? navigate('trip-dates') : replace(inviteReturnScreen)} onToast={setToast} />;
       break;
     case 'trip-dates':
-      content = <TripDatesScreen draft={draft} onChange={(dates) => setDraft((current) => ({ ...current, ...dates }))} onBack={goBack} onCreate={() => navigate(draft.mode === 'group' ? 'group-waiting' : 'solo-waiting')} />;
+      content = <TripDatesScreen draft={draft} onChange={(dates) => { setDraft((current) => ({ ...current, ...dates })); setItineraryDays([]); setActiveDayIndex(0); }} onBack={goBack} onCreate={() => navigate(draft.mode === 'group' ? 'group-waiting' : 'solo-waiting')} />;
       break;
     case 'group-waiting':
       content = <WaitingListScreen mode="group" tripName={draft.name} places={groupPlaces} members={groupMembers} onChange={updateGroupPlaces} onBack={goBack} onContinue={openGroupPreference} />;
@@ -596,7 +641,7 @@ export default function App() {
       content = <SoloFinalReviewScreen draft={draft} places={soloPlaces} selectedIds={soloSelectedIds} confirmed={soloFinalPlacesConfirmed} onSelectedIdsChange={setSoloSelectedIds} onBack={goBack} onConfirm={confirmSoloFinalPlaces} />;
       break;
     case 'itinerary-planning':
-      content = itineraryDays.length ? <ItineraryPlanningScreen draft={draft} mode={draft.mode || 'solo'} days={itineraryDays} activeDayIndex={activeDayIndex} onActiveDayChange={setActiveDayIndex} onDaysChange={updateItineraryDays} onBack={goBack} onRoutePreview={() => navigate('route-preview')} onPlanComplete={openDashboard} onToast={setToast} /> : null;
+      content = itineraryDays.length ? <ItineraryPlanningScreen draft={draft} mode={draft.mode || 'solo'} days={itineraryDays} confirmedPlaces={confirmedPlaces} activeDayIndex={activeDayIndex} onActiveDayChange={setActiveDayIndex} onDaysChange={updateItineraryDays} onBack={goBack} onRoutePreview={() => navigate('route-preview')} onPlanComplete={openDashboard} onToast={setToast} /> : null;
       break;
     case 'route-preview':
       content = itineraryDays.length ? <RoutePreviewScreen days={itineraryDays} activeDayIndex={activeDayIndex} onDaysChange={updateItineraryDays} onBack={goBack} onToast={setToast} /> : null;
@@ -606,20 +651,20 @@ export default function App() {
       content = draft.mode ? <DashboardScreen draft={draft} mode={draft.mode} status={tripStatus} members={groupMembers} suggestionCount={pendingSuggestionCount} unresolvedSharedCount={unresolvedSharedCount} onBack={() => replace('trips')} onItinerary={() => navigate('itinerary-detail')} onSmartPacking={openSmartPacking} onBudget={() => navigate('budget-overview')} onGroup={() => navigate('group-overview')} onAdjustment={openDashboardAdjustment} /> : null;
       break;
     case 'itinerary-detail':
-      content = itineraryDays.length ? <ItineraryDetailScreen days={itineraryDays} activeDayIndex={activeDayIndex} onActiveDayChange={setActiveDayIndex} onBack={goBack} onViewRoute={() => navigate('route-preview')} onEditDay={() => navigate('itinerary-planning')} onAdjustment={setActiveAdjustment} /> : null;
+      content = itineraryDays.length ? <ItineraryDetailScreen days={itineraryDays} activeDayIndex={activeDayIndex} onActiveDayChange={setActiveDayIndex} onBack={() => replace(draft.mode === 'group' ? 'group-dashboard' : 'solo-dashboard')} onViewRoute={() => navigate('route-preview')} onEditDay={() => navigate('itinerary-planning')} onAdjustment={setActiveAdjustment} /> : null;
       break;
     case 'smart-packing-solo':
     case 'smart-packing-group':
-      content = draft.mode ? <SmartPackingHomeScreen draft={draft} mode={draft.mode} members={groupMembers} suggestions={packingSuggestions} personalItems={personalPackingItems} sharedItems={sharedPackingItems} delta={packingDelta} onBack={goBack} onSuggestions={() => navigate('packing-suggestions')} onPersonal={() => navigate('personal-packing')} onShared={() => navigate('shared-packing')} onOutfits={() => navigate('outfit-planning')} onReminders={() => navigate('packing-reminders')} onUpdates={() => navigate('packing-delta')} /> : null;
+      content = draft.mode ? <SmartPackingHomeScreen draft={draft} mode={draft.mode} sampleTrip={trips.some((trip) => trip.id === activeTripId)} members={groupMembers} suggestions={packingSuggestions} personalItems={personalPackingItems} sharedItems={sharedPackingItems} delta={packingDelta} onBack={() => replace(draft.mode === 'group' ? 'group-dashboard' : 'solo-dashboard')} onSuggestions={() => navigate('packing-suggestions')} onPersonal={() => navigate('personal-packing')} onShared={() => navigate('shared-packing')} onOutfits={() => navigate('outfit-planning')} onReminders={() => navigate('packing-reminders')} onUpdates={() => navigate('packing-delta')} /> : null;
       break;
     case 'packing-suggestions':
-      content = draft.mode ? <PackingSuggestionsScreen mode={draft.mode} suggestions={packingSuggestions} onBack={goBack} onDecision={(id, decision) => updateSuggestion(id, { decision })} onType={(id, type) => updateSuggestion(id, { type, quantity: type === 'Personal' ? 1 : packingSuggestions.find((item) => item.id === id)?.quantity || 1 })} onQuantity={(id, quantity) => updateSuggestion(id, { quantity: Math.max(1, quantity) })} onAddSelected={addSelectedSuggestions} /> : null;
+      content = draft.mode ? <PackingSuggestionsScreen mode={draft.mode} suggestions={packingSuggestions} onBack={() => replace(draft.mode === 'group' ? 'smart-packing-group' : 'smart-packing-solo')} onDecision={(id, decision) => updateSuggestion(id, { decision })} onType={(id, type) => updateSuggestion(id, { type, quantity: type === 'Personal' ? 1 : packingSuggestions.find((item) => item.id === id)?.quantity || 1 })} onQuantity={(id, quantity) => updateSuggestion(id, { quantity: Math.max(1, quantity) })} onAddSelected={addSelectedSuggestions} /> : null;
       break;
     case 'personal-packing':
-      content = draft.mode ? <PersonalPackingScreen mode={draft.mode} items={personalPackingItems} onBack={goBack} onToggle={(id) => setPersonalPackingItems((current) => current.map((item) => item.id === id ? { ...item, packed: !item.packed } : item))} onQuantity={(id, quantity) => setPersonalPackingItems((current) => current.map((item) => item.id === id ? { ...item, quantity } : item))} onRemove={(id) => { const item = personalPackingItems.find((candidate) => candidate.id === id); setPersonalPackingItems((current) => current.filter((candidate) => candidate.id !== id)); if (item) setToast(`${item.name} removed`); }} onAdd={(name, category, quantity) => { setPersonalPackingItems((current) => [...current, { id: `custom-${Date.now()}`, name, category, quantity, packed: false, source: 'Custom item' }]); setToast(`${name} added as Unchecked`); }} onOutfit={() => navigate('outfit-planning')} /> : null;
+      content = draft.mode ? <PersonalPackingScreen mode={draft.mode} items={personalPackingItems} outfitPlans={outfitPlans} onBack={() => replace(draft.mode === 'group' ? 'smart-packing-group' : 'smart-packing-solo')} onToggle={(id) => setPersonalPackingItems((current) => current.map((item) => item.id === id ? { ...item, packed: !item.packed } : item))} onQuantity={(id, quantity) => setPersonalPackingItems((current) => current.map((item) => item.id === id ? { ...item, quantity } : item))} onRemove={(id) => { const item = personalPackingItems.find((candidate) => candidate.id === id); setPersonalPackingItems((current) => current.filter((candidate) => candidate.id !== id)); if (item) setToast(`${item.name} removed`); }} onAdd={(name, category, quantity) => { setPersonalPackingItems((current) => [...current, { id: `custom-${Date.now()}`, name, category, quantity, packed: false, source: 'Custom item' }]); setToast(`${name} added as Unchecked`); }} onOutfit={() => navigate('outfit-planning')} /> : null;
       break;
     case 'shared-packing':
-      content = draft.mode === 'group' ? <SharedPackingScreen items={sharedPackingItems} members={groupMembers} onBack={goBack} onClaim={(id) => { claimSharedItem(id); setToast("Claimed — you'll bring it"); }} onAssign={(itemId, memberId) => { assignSharedItem(itemId, memberId); setToast('Shared item assigned'); }} onMarkPacked={(id) => { markSharedItemPacked(id); setToast('Shared item marked packed'); }} onAdd={(name, quantity) => { setSharedPackingItems((current) => [...current, { id: `shared-custom-${Date.now()}`, name, suggestedQuantity: quantity, assignments: [] }]); setToast(`${name} added as Unassigned`); }} /> : null;
+      content = draft.mode === 'group' ? <SharedPackingScreen items={sharedPackingItems} members={groupMembers} onBack={() => replace('smart-packing-group')} onClaim={(id) => { claimSharedItem(id); setToast("Claimed — you'll bring it"); }} onAssign={(itemId, memberId) => { assignSharedItem(itemId, memberId); setToast('Shared item assigned'); }} onMarkPacked={(id) => { markSharedItemPacked(id); setToast('Shared item marked packed'); }} onAdd={(name, quantity) => { setSharedPackingItems((current) => [...current, { id: `shared-custom-${Date.now()}`, name, suggestedQuantity: quantity, assignments: [] }]); setToast(`${name} added as Unassigned`); }} /> : null;
       break;
     case 'outfit-planning':
       content = outfitPlans.length ? <OutfitPlanningScreen plans={outfitPlans} activeDayIndex={activeOutfitDayIndex} onActiveDayChange={setActiveOutfitDayIndex} onPlanChange={updateOutfitPlan} onAddOutfit={addOutfit} onBack={() => replace('personal-packing')} onSkip={() => replace('personal-packing')} onToast={setToast} /> : null;
@@ -628,10 +673,10 @@ export default function App() {
       content = draft.mode ? <PackingRemindersScreen mode={draft.mode} settings={reminderSettings} onChange={setReminderSettings} onBack={goBack} onSave={() => { setToast('Packing reminders saved'); replace(draft.mode === 'group' ? 'smart-packing-group' : 'smart-packing-solo'); }} /> : null;
       break;
     case 'packing-delta':
-      content = <PackingDeltaScreen delta={packingDelta} onChange={setPackingDelta} onApply={applyPackingDelta} onBack={goBack} />;
+      content = <PackingDeltaScreen delta={packingDelta} onChange={setPackingDelta} onApply={applyPackingDelta} onBack={() => replace(draft.mode === 'group' ? 'smart-packing-group' : 'smart-packing-solo')} />;
       break;
     case 'budget-overview':
-      content = draft.mode ? <BudgetOverviewScreen mode={draft.mode} expenses={expenses} members={groupMembers} onBack={goBack} onAdd={() => navigate(draft.mode === 'group' ? 'add-expense-group' : 'add-expense-solo')} /> : null;
+      content = draft.mode ? <BudgetOverviewScreen mode={draft.mode} expenses={expenses} members={groupMembers} onBack={() => replace(draft.mode === 'group' ? 'group-dashboard' : 'solo-dashboard')} onAdd={() => navigate(draft.mode === 'group' ? 'add-expense-group' : 'add-expense-solo')} /> : null;
       break;
     case 'add-expense-solo':
     case 'add-expense-group':
@@ -650,7 +695,7 @@ export default function App() {
       content = draft.mode === 'group' ? <ReassignSharedItemsScreen items={reassignItems} members={groupMembers} affectedMemberName={affectedMemberName} onBack={goBack} onLater={() => { setReassignItemIds([]); setToast('Shared items left Unassigned'); replace('group-overview'); }} onReassign={reassignSharedItems} /> : null;
       break;
     case 'profile-settings':
-      content = <ProfileSettingsScreen profile={profile} notifications={notificationPreferences} language={languagePreference} theme={themePreference} onBack={goBack} onEdit={() => navigate('edit-profile')} onNotificationsChange={setNotificationPreferences} onLanguageChange={setLanguagePreference} onThemeChange={setThemePreference} onLogout={logout} />;
+      content = <ProfileSettingsScreen profile={profile} notifications={notificationPreferences} language={languagePreference} theme={themePreference} onBack={() => replace('trips')} onEdit={() => navigate('edit-profile')} onNotificationsChange={setNotificationPreferences} onLanguageChange={setLanguagePreference} onThemeChange={setThemePreference} onLogout={logout} />;
       break;
     case 'edit-profile':
       content = <EditProfileScreen profile={profile} onCancel={goBack} onSave={saveProfile} />;

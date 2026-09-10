@@ -71,7 +71,7 @@ export function GroupPreferenceScreen({ places, ratings, members, onRatingsChang
         <section className="preference-intro">
           <div><p className="eyebrow">Group preference</p><h2 id="preference-title">Share your view</h2></div>
           <span className="progress-pill">{ratedPlaces} of {places.length} rated</span>
-          <p>Ratings are public to the group and can be updated later.</p>
+          <p>Group ratings are public. Update yours anytime.</p>
         </section>
 
         <div className="rating-list">
@@ -129,7 +129,7 @@ export function GroupResultsScreen({ places, ratings, members, onBack, onContinu
         <section className="results-intro">
           <span className="flow-icon"><SlidersHorizontal aria-hidden="true" size={23} /></span>
           <h2 id="results-title">See the group picture</h2>
-          <p>Scores use submitted public ratings only. Participation stays visible when not everyone has rated.</p>
+          <p>Scores use submitted group ratings. Participation stays visible.</p>
         </section>
         <div className="results-list">
           {ranked.map((place, index) => {
@@ -174,7 +174,7 @@ export function GroupFinalReviewScreen({ draft, places, ratings, members, select
       <AppBar title="Final Review" onBack={onBack} />
       <div className="flow-body">
         <TripSummaryCard draft={draft} />
-        <div className="final-review-heading"><div><h2 id="group-final-title">Confirm the group shortlist</h2><p>High places start included, Medium stays open for review, and Low needs group approval.</p></div><span className="selected-count">{selectedIds.length} selected</span></div>
+        <div className="final-review-heading"><div><h2 id="group-final-title">Confirm the group shortlist</h2><p>High: included. Medium: review. Low: group approval.</p></div><span className="selected-count">{selectedIds.length} selected</span></div>
         <div className="group-review-list">
           {places.map((place) => {
             const summary = getRatingSummary(ratings[place.id], members);

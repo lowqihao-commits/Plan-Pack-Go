@@ -28,6 +28,8 @@ export function createPackingSuggestions(days: ItineraryDay[], mode: TravelMode)
   const hasHillWalk = placeNames.some((name) => name.includes('Hill') || name.includes('Temple'));
   const hasBeach = placeNames.some((name) => name.toLowerCase().includes('beach'));
   const hasGarden = placeNames.some((name) => name.includes('Entopia'));
+  const walkingDays = days.filter((day) => day.stops.some((stop) => /Hill|Temple/i.test(stop.name))).map((day) => `Day ${day.dayNumber}`).join(', ');
+  const gardenDays = days.filter((day) => day.stops.some((stop) => /Entopia/i.test(stop.name))).map((day) => `Day ${day.dayNumber}`).join(', ');
   const sharedType = mode === 'group' ? 'Potentially Shared' : 'Personal';
   const items = [
     suggestion('passport', 'Passport', 'Needed', 1, 'Fixed travel essential'),
@@ -38,9 +40,9 @@ export function createPackingSuggestions(days: ItineraryDay[], mode: TravelMode)
 
   if (hasHillWalk) {
     items.push(
-      suggestion('walking-shoes', 'Comfortable walking shoes', 'Needed', 1, 'Day 2 — Hill and temple walking', 'Personal', 'pair'),
-      suggestion('water-bottle', 'Refillable water bottle', 'Needed', 1, 'Day 2 — Hill and temple walking'),
-      suggestion('daypack', 'Small daypack', 'Possibly Useful', 1, 'Day 2 — Hill itinerary'),
+      suggestion('walking-shoes', 'Comfortable walking shoes', 'Needed', 1, `${walkingDays} — Hill and temple walking`, 'Personal', 'pair'),
+      suggestion('water-bottle', 'Refillable water bottle', 'Needed', 1, `${walkingDays} — Hill and temple walking`),
+      suggestion('daypack', 'Small daypack', 'Possibly Useful', 1, `${walkingDays} — Walking itinerary`),
     );
   }
   if (hasBeach) {
@@ -53,7 +55,7 @@ export function createPackingSuggestions(days: ItineraryDay[], mode: TravelMode)
       suggestion('waterproof-pouch', 'Waterproof phone pouch', 'Possibly Useful', 1, 'Beach activity'),
     );
   }
-  if (hasGarden) items.push(suggestion('repellent', 'Insect repellent', 'Possibly Useful', mode === 'group' ? 2 : 1, 'Day 3 — Outdoor garden', sharedType));
+  if (hasGarden) items.push(suggestion('repellent', 'Insect repellent', 'Possibly Useful', mode === 'group' ? 2 : 1, `${gardenDays} — Outdoor garden`, sharedType));
   items.push(
     suggestion('rain-jacket', 'Lightweight rain jacket', 'Needed', 1, 'Rain may affect outdoor activities'),
     suggestion('umbrellas', 'Compact umbrellas', 'Needed', mode === 'group' ? 3 : 1, 'Rain forecast during the trip', sharedType),
@@ -99,11 +101,13 @@ export function createOutfitPlans(days: ItineraryDay[]): OutfitDayPlan[] {
     return {
       dayNumber: day.dayNumber,
       activityContext,
+      outfits: [{
+      id: `outfit-day-${day.dayNumber}-1`,
       items: walking ? ['Breathable top', 'Lightweight trousers', 'Walking shoes', 'Rain jacket'] : ['Breathable top', 'Comfortable bottoms', 'Walking shoes'],
       decision: 'pending',
-      photoAttached: false,
       notes: '',
       reuseItem: day.dayNumber > 1 ? 'Walking shoes — Day 1' : '',
+      }],
     };
   });
 }

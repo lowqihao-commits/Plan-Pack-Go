@@ -105,7 +105,7 @@ export function WaitingListScreen({ mode, tripName, places, members = [], onChan
             {places.length ? <button className="clear-button" type="button" onClick={() => { if (window.confirm('Clear every place from this Waiting List?')) sync([]); }}>Clear list</button> : null}
           </div>
           {places.length === 0 ? (
-            <div className="empty-state empty-state--places"><span className="empty-state__icon"><Search aria-hidden="true" size={23} /></span><h3>Your list is ready for ideas</h3><p>Search for a place above or enter one you already have in mind.</p></div>
+            <div className="empty-state empty-state--places"><span className="empty-state__icon"><Search aria-hidden="true" size={23} /></span><h3>Your list is ready for ideas</h3><p>Search for a place or add your own.</p></div>
           ) : (
             <div className="place-list">
               {places.map((place, index) => (

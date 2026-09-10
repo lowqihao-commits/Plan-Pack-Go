@@ -69,7 +69,7 @@ export function AddExpenseScreen({ mode, members, onCancel, onSave }: { mode: Tr
   return <Page className="add-expense-page" labelledBy="add-expense-title">
     <AppBar title="Add Expense" onBack={onCancel} />
     <form className="add-expense-body" onSubmit={submit}>
-      <section className="expense-form-heading"><span><Sparkles aria-hidden="true" size={22} /></span><div><p className="eyebrow">Trip cost</p><h2 id="add-expense-title">Record one expense</h2><p>Keep it simple and add this cost to the trip.</p></div></section>
+      <section className="expense-form-heading"><span><Sparkles aria-hidden="true" size={22} /></span><div><p className="eyebrow">Trip cost</p><h2 id="add-expense-title">Record one expense</h2></div></section>
 
       <TextField id="expense-name" name="expenseName" label="Expense Name" autoComplete="off" placeholder="Example: Penang Hill ticket…" value={name} onChange={(event) => setName(event.target.value)} />
       <label className="cost-field"><span>Amount</span><div className="amount-input"><b>RM</b><input aria-label="Amount in RM" name="expenseAmount" type="number" min="0.01" step="0.01" inputMode="decimal" autoComplete="off" placeholder="0.00" value={amount} onChange={(event) => setAmount(event.target.value)} /></div></label>
