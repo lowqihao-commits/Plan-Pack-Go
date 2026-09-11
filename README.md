@@ -164,7 +164,7 @@ The 5 Whys analysis helped us trace packing problems back to their root cause: *
 
 ## 3. Design & Prototype
 
-**UI Prototype:** [Open Interactive Prototype](YOUR_PUBLIC_PROTOTYPE_LINK)
+**UI Prototype:** [Open Interactive Prototype](https://plan-pack-d74240l2q-ctrlc-ctrlv.vercel.app/#/)
 
 The prototype is designed as a mobile-first travel planner. The selected screens below show how judges can access the prototype, follow the core travel-planning flow, and experience Plan Pack Go's main differentiator: **itinerary-aware Smart Packing and group luggage coordination**.
 
