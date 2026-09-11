@@ -164,7 +164,7 @@ The 5 Whys analysis helped us trace packing problems back to their root cause: *
 
 ## 3. Design & Prototype
 
-**UI Prototype:** [Open Interactive Prototype](https://plan-pack-d74240l2q-ctrlc-ctrlv.vercel.app/#/)
+**UI Prototype:** [Open Interactive Prototype](YOUR_PUBLIC_PROTOTYPE_LINK)
 
 The prototype is designed as a mobile-first travel planner. The selected screens below show how judges can access the prototype, follow the core travel-planning flow, and experience Plan Pack Go's main differentiator: **itinerary-aware Smart Packing and group luggage coordination**.
 
@@ -172,25 +172,25 @@ The prototype is designed as a mobile-first travel planner. The selected screens
 <tr>
 <td width="50%" align="center">
 
-### 1. Login — How to Access
+<h3>1. Login — How to Access</h3>
 
 <img src="readme_asset/1.png" width="280">
 
-<sub>
+<p align="center">
 Use <strong>Continue with Google</strong> to enter the interactive prototype — no admin credentials are required.
-</sub>
+</p>
 
 </td>
 
 <td width="50%" align="center">
 
-### 2. My Trips — Start or Resume a Trip
+<h3>2. My Trips — Start or Resume a Trip</h3>
 
 <img src="readme_asset/2.png" width="280">
 
-<sub>
+<p align="center">
 Create a new Solo or Group trip, or reopen an existing trip from one central travel hub.
-</sub>
+</p>
 
 </td>
 </tr>
@@ -198,25 +198,25 @@ Create a new Solo or Group trip, or reopen an existing trip from one central tra
 <tr>
 <td width="50%" align="center">
 
-### 3. Group Preference Rating — Plan Together
+<h3>3. Group Preference Rating — Plan Together</h3>
 
 <img src="readme_asset/3.png" width="280">
 
-<sub>
+<p align="center">
 Group members rate shared places from 0–10 so the final plan reflects everyone’s preferences.
-</sub>
+</p>
 
 </td>
 
 <td width="50%" align="center">
 
-### 4. Itinerary Planning — Turn Choices into a Route
+<h3>4. Itinerary Planning — Turn Choices into a Route</h3>
 
 <img src="readme_asset/4.png" width="280">
 
-<sub>
+<p align="center">
 Confirmed places are organised into a multi-day route that users can review and adjust before finalising.
-</sub>
+</p>
 
 </td>
 </tr>
@@ -224,25 +224,25 @@ Confirmed places are organised into a multi-day route that users can review and 
 <tr>
 <td width="50%" align="center">
 
-### 5. AI Packing Suggestions — Pack for the Actual Trip
+<h3>5. AI Packing Suggestions — Pack for the Actual Trip</h3>
 
 <img src="readme_asset/5.png" width="300">
 
-<sub>
+<p align="center">
 Plan Pack Go turns the actual itinerary and weather into explainable packing suggestions — users choose what to <strong>Add</strong> or <strong>Skip</strong>.
-</sub>
+</p>
 
 </td>
 
 <td width="50%" align="center">
 
-### 6. Shared Packing — Coordinate Group Luggage
+<h3>6. Shared Packing — Coordinate Group Luggage</h3>
 
 <img src="readme_asset/6.png" width="300">
 
-<sub>
+<p align="center">
 Shared items can be assigned or claimed, with quantity tracking to prevent duplicates, shortages, and forgotten luggage.
-</sub>
+</p>
 
 </td>
 </tr>
@@ -250,25 +250,25 @@ Shared items can be assigned or claimed, with quantity tracking to prevent dupli
 <tr>
 <td width="50%" align="center">
 
-### 7. Budget — Track Trip Costs
+<h3>7. Budget — Track Trip Costs</h3>
 
 <img src="readme_asset/7.png" width="280">
 
-<sub>
+<p align="center">
 Record personal or shared trip expenses, including who paid and which members share the cost.
-</sub>
+</p>
 
 </td>
 
 <td width="50%" align="center">
 
-### 8. Packing Delta — Adapt When the Trip Changes
+<h3>8. Packing Delta — Adapt When the Trip Changes</h3>
 
 <img src="readme_asset/8.png" width="300">
 
-<sub>
+<p align="center">
 When the itinerary or weather changes, only affected packing suggestions are updated while the existing checklist stays intact.
-</sub>
+</p>
 
 </td>
 </tr>
